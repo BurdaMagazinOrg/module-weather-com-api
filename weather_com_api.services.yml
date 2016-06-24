@@ -1,0 +1,30 @@
+services:
+  wunderground_api.client:
+    class: Drupal\weather_api\WundergroundWeatherApiClient
+    arguments: []
+
+  wunderground_api.autocomplete_api:
+    class: Drupal\weather_api\WundergroundAutocompleteAPi
+    arguments: []
+
+  wunderground_weather_api.autocomplete_database:
+    class: Drupal\weather_api\WundergroundAutoCompleteDatabase
+    arguments: ["@database"]
+
+  cache.weather_com_api:
+    class: Drupal\Core\Cache\CacheBackendInterface
+    tags:
+    - { name: cache.bin }
+    factory: cache_factory:get
+    arguments: [weather]
+  weather_com_api.client:
+    class: Drupal\weather_api\WeatherComApiClient
+    arguments: []
+  weather_com_api.widget_handling:
+    class: Drupal\weather_com_api\WidgetHandler
+    arguments: []
+
+  weather_com_api.intl:
+    class: Drupal\weather_com_api\WeatherComApiIntl
+    arguments: []
+

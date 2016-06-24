@@ -1,0 +1,23 @@
+weather_api_com.admin_settings:
+  path: '/admin/config/services/weather-com-api'
+  defaults:
+    _form: '\Drupal\weather_com_api\Form\WeatherComApiSettingsForm'
+    _title: 'Weather.com API Settings'
+  requirements:
+    _permission: 'administer content'
+
+weather_com_api.replace_widget_controller_replaceWidget:
+  path: 'weather_com_api/replace/widget'
+  defaults:
+    _controller: '\Drupal\weather_com_api\Controller\ReplaceWidgetController::replaceWidget'
+    _title: 'Weather'
+  requirements:
+    _permission: 'access content'
+
+weather_com_api.city.autocomplete:
+  path: '/weather_com_api/city/autocomplete'
+  defaults:
+    _controller: '\Drupal\weather_com_api\Controller\CityAutocompleteController::autocomplete'
+    _format: json
+  requirements:
+    _permission: 'access content'

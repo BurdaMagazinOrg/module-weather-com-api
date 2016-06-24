@@ -1,0 +1,6 @@
+weather_com_api.admin_settings:
+  title: 'Weather.com API settings'
+  parent: system.admin_config_services
+  description: 'Configure general settings Weather.com API'
+  weight: -10
+  route_name: weather_api_com.admin_settings

@@ -1,0 +1,25 @@
+{% if weather %}
+    <div class="weather-details">
+        {% if weather.current.observation %}
+            Current
+            <div class="weather-current">
+                <p class="weather-temperature">{{ weather.current.observation.metric.temp }} °C</p>
+                <div class="weather-icon-{{ weather.current.observation.icon_code }}">{{weather.current.observation.icon_code }}</div>
+            </div>
+        {% endif %}
+        {% if weather.forecast.forecasts %}
+            {% for i in weather.forecast.forecasts %}
+                <div class="weather-day">
+                    <p class="weather-daypart">{{ weather.forecast.forecasts[loop.index].daypart_name }}</p>
+                    <p class="weather-temperature">{{ weather.forecast.forecasts[loop.index].temp }} °C</p>
+                    <p class="weather-precipation">{{ weather.forecast.forecasts[loop.index].pop }} %</p>
+                    <div class="weather-icon-{{ weatweather.forecast.forecastsher[loop.index].icon_code }}">{{weather.forecast.forecasts[loop.index].icon_code }}</div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+
+    </div>
+{% else %}
+    <div class="weather-details"><span>Wetter wird geladen</span></div>
+{% endif %}

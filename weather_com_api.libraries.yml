@@ -1,0 +1,9 @@
+weather-widget:
+  version: 1.x
+  css:
+    theme:
+      css/weather_widget.css: {}
+  js:
+    js/weather_widget.js: {}
+  dependencies:
+    - core/drupal.ajax

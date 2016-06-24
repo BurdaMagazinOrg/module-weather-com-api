@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * @file
+ * Contains weather_com_api.module..
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+const WEATHER_API_URL = 'http://api.weather.com';
+const WUNDERGROUND_API_URL = 'http://api.wunderground.com';
+const WUNDERGROUND_AUTOCOMPLETE_API_URL = 'http://autocomplete.wunderground.com';
+
+/**
+ * Implements hook_help().
+ */
+function weather_api_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the weather_com_api module.
+    case 'help.page.weather_com_api':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Implements Weather.com API') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function weather_com_api_menu_link_defaults() {
+  // Admin page.
+  $items['weather_com_api.admin_settings'] = [
+    'link_title' => 'Weather.com API settings',
+    'description' => 'Perform administration tasks for weather.com API.',
+    'route_name' => 'weather_com_api.admin_settings',
+    'parent' => 'system.admin.config.services',
+  ];
+  return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function weather_com_api_theme($existing, $type, $theme, $path) {
+  return [
+    'weather_com_api_forecast_block' => [
+      'template' => 'weather-com-api_forecast',
+      'variables' => [
+        'weather' => [],
+      ],
+    ],
+  ];
+}

@@ -1,0 +1,50 @@
+<?php
+
+use Drupal\Core\Database\Database;
+
+/**
+ * Implements hook_schema().
+ */
+function weather_com_api_schema() {
+  // Create a table to store cities in.
+  $schema['weather_api_cities'] = array(
+    'description' => 'Store cities from Wunderground Autocomplete API',
+    'fields' => array(
+      'cid' => array(
+        'description' => 'The primary identifier',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'city' => array(
+        'type' => 'varchar',
+        'length' => '1024',
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'l' => array(
+        'type' => 'varchar',
+        'length' => '1024',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The unique query path for the wunderground weather api',
+      ),
+      'latitude' => array(
+        'type' => 'varchar',
+        'length' => '24',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The latitude of the city',
+      ),
+      'longitude' => array(
+        'type' => 'varchar',
+        'length' => '24',
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The longitude of the city',
+      ),
+    ),
+    'primary key' => array('cid'),
+  );
+  return $schema;
+}
