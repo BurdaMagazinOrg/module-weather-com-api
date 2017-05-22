@@ -25,7 +25,7 @@ class WeatherComApiWidgetSubmit {
    * @param $form_state
    * @return \Drupal\Core\Ajax\AjaxResponse
    */
-  public function sendAjax($form, &$form_state) {
+  public static function sendAjax($form, &$form_state) {
     $widget_handler = new WidgetHandler();
     // Gather information from the form, the block configuration and cookie.
     $location_information = $widget_handler->gatherInformation($form, $form_state);
@@ -35,16 +35,19 @@ class WeatherComApiWidgetSubmit {
     // Decide location might be an array containing coordinates already from
     // Weather.com when querying the city based on user coordinates.
     if (is_array($decide_location)) {
-      $coordinates = $decide_location['coordinates'];
       $widget_location = $decide_location['city'];
+      $coordinates = $decide_location['coordinates'];
     }
     else {
-      $autocomplete_database = new WundergroundAutoCompleteDatabase(\Drupal::database());
-      $city_object = array_pop($autocomplete_database->getCityResult($decide_location));
-      if (!empty($city_object->latitude)) {
-        $coordinates = array($city_object->latitude, $city_object->longitude);
-      }
       $widget_location = $decide_location;
+      $autocomplete_database = new WundergroundAutoCompleteDatabase(\Drupal::database());
+      $city_result = $autocomplete_database->getCityResult($widget_location);
+      if (is_array($city_result)) {
+        $city_object = array_pop($city_result);
+        if (!empty($city_object->latitude)) {
+          $coordinates = [$city_object->latitude, $city_object->longitude];
+        }
+      }
     }
     // If coordinates are empty, a city might not have been queried in the
     // Autocomplete Database. We can query it here.
@@ -53,15 +56,20 @@ class WeatherComApiWidgetSubmit {
       $autocomplete_client = new WundergroundAutocompleteAPi($client);
       $autocomplete_client->requestData($decide_location,  ['c' => 'DE']);
       // Lookup coordinates by city name.
-      $autocomplete_database = new WundergroundAutoCompleteDatabase(\Drupal::database());
-      $city_object = array_pop($autocomplete_database->getCityResult($decide_location));
-      if (!empty($city_object->latitude)) {
-        $coordinates = array($city_object->latitude, $city_object->longitude);
+      if (empty($city_result)) {
+        $autocomplete_database = new WundergroundAutoCompleteDatabase(\Drupal::database());
+        $city_result = $autocomplete_database->getCityResult($widget_location);
+        if (is_array($city_result)) {
+          $city_object = array_pop($city_result);
+          if (!empty($city_object->latitude)) {
+            $coordinates = [$city_object->latitude, $city_object->longitude];
+          }
+        }
       }
     }
     // Build the Ajax Response.
     $response = new AjaxResponse();
-    setcookie('weather_location', $decide_location, strtotime("+1 days"), '/');
+    setcookie('weather_location', $widget_location, strtotime("+1 days"), '/');
     $response->addCommand(new ReplaceWeatherWidget($form_state->getBuildInfo()['args'][0], $widget_location, $coordinates));
     return $response;
   }
