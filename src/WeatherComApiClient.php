@@ -6,12 +6,9 @@
  */
 
 namespace Drupal\weather_com_api;
-use Drupal\Core\Config\Config;
+
 use GuzzleHttp\Client;
-use Drupal\weather_com_api\WeatherComApiIntl;
-
-
-
+use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * Class WundergroundWeatherApiClient.
@@ -42,7 +39,7 @@ class WeatherComApiClient {
    *  An array of options which will be used to create the request url.
    * @param string $query_parameters
    *  A string which will be added the the request url.
-   * @return response object
+   * @return mixed object
    */
   public function requestData($options, $query_parameters) {
     // Build request url using the options.
@@ -58,9 +55,15 @@ class WeatherComApiClient {
       $url .= '?' . $query_parameters;
     }
     // Request data from the api.
-    $data = $this->client->request('GET', $url);
-    $response = json_decode($data->getBody());
-    $this->setLastResponseData($response);
+    try {
+      $data = $this->client->request('GET', $url);
+      $response = json_decode($data->getBody());
+      $this->setLastResponseData($response);
+    }
+    catch (GuzzleException $exception) {
+      \Drupal::logger('weather_com_api')->error('Failed to receive data from Weather.com API at class WeatherComApiClient. Exception was: ' . $exception->getMessage());
+      $response = new \stdClass();
+    }
     return $response;
   }
 
@@ -103,8 +106,8 @@ class WeatherComApiClient {
     $query_parameters = 'language=' . $this->language['language_code'] . '&units=' . $this->language['measure'] . '&apiKey=' . $this->api_key;
     $response = $this->requestData($options, $query_parameters);
     $response->city = $location->city;
-    // Cache for 10 minutes.
-    $cache = \Drupal::cache('weather_com_api')->set('current_' . $location->city, $response, time() + 600);
+    // Cache for 60 minutes.
+    $cache = \Drupal::cache('weather_com_api')->set('current_' . $location->city, $response, time() + 3600);
     return $response;
   }
 
@@ -181,6 +184,5 @@ class WeatherComApiClient {
   public function setLastResponseData($last_response_data) {
     $this->last_response_data = $last_response_data;
   }
-
 
 }

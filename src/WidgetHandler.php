@@ -37,7 +37,7 @@ class WidgetHandler {
     $form_values = $form_state->getValues();
     $block_configuration = $block_configuration = $form_state->getBuildInfo()['args'][0];;
     // Check for a stored city.
-    $cookie_location = $_COOKIE['weather_location'];
+    $cookie_location = !empty($_COOKIE['weather_location']) ? $_COOKIE['weather_location'] : $block_configuration['location'];
     $form_city = $form_values['city'];
     $coordinates_text = explode(':', $form_values['coordinates']);
 

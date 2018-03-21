@@ -8,10 +8,8 @@
 namespace Drupal\weather_com_api;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Drupal\Core\Database\Database;
-use Drupal\weather_com_api\WundergroundAutoCompleteDatabase;
-use Drupal\Core\Database\Connection;
 
 /**
  * Class WundergroundAutocompleteAPi.
@@ -47,20 +45,30 @@ class WundergroundAutocompleteAPi {
         $search_query .= '&' . $parameter_key . '=' . $parameter_value;
       }
     }
-    $response = $this->client->request('GET', $search_query);
-    $data = json_decode($response->getBody());
 
-    // Extract key and value from the returned array.
     $results = [];
-    foreach ($data->RESULTS as $result) {
-      // Remove country names when returning the results.
-      // @ToDO may figure out a better way to do this.
-      $city_name = substr($result->name, 0, strpos($result->name, ','));
-      if (!empty($city_name)) {
-        $results[] = ['value' => $city_name];
+
+    try {
+      $response = $this->client->request('GET', $search_query);
+      $data = json_decode($response->getBody());
+      // Extract key and value from the returned array.
+      if (!empty($data->RESULTS)) {
+        foreach ($data->RESULTS as $result) {
+          // Remove country names when returning the results.
+          // @ToDO may figure out a better way to do this.
+          $city_name = substr($result->name, 0, strpos($result->name, ','));
+          if (!empty($city_name)) {
+            $results[] = ['value' => $city_name];
+          }
+        }
+        $this->wundergrounddb->saveAutocompleteResults($data->RESULTS);
       }
     }
-    $this->wundergrounddb->saveAutocompleteResults($data->RESULTS);
+    catch (GuzzleException $exception) {
+      \Drupal::logger('weather_com_api')->error('Failed to receive data from Weather.com API at class WundergroundAutocompleteAPi. Exception was: ' . $exception->getMessage());
+    }
+
     return new JsonResponse($results);
   }
+
 }
