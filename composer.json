@@ -1,5 +1,5 @@
 {
-  "name": "drupal/weather_com_api",
+  "name": "burdamagazinorg/weather_com_api",
   "type": "drupal-module",
   "description": "Implements Weather API",
   "keywords": ["Drupal"],
