@@ -3,7 +3,7 @@
   "type": "drupal-module",
   "description": "Implements Weather API",
   "keywords": ["Drupal"],
-  "license": "GPL-2.0+",
+  "license": "GPL-2.0-or-later",
   "homepage": "https://www.drupal.org/project/weather_com_api",
   "minimum-stability": "dev",
   "support": {
